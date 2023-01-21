@@ -8,6 +8,12 @@
 </head>
 <body>
     <h1>Let us know you. Fill the form below </h1>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ form.username }}
+        {{ form.password }}
+        {{ form.submit }}
+    </form>
     <a href="{{url_for('home')}}">Go back to Home</a><br>
     <a href="{{url_for('register')}}">Create an account</a><br>
 </body><br>
