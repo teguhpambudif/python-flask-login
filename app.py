@@ -16,6 +16,10 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20),nullable=False,unique=True)
@@ -36,25 +40,10 @@ class LoginForm(FlaskForm):
     password = PasswordField(validators=[InputRequired(),Length(min=4,max=20)],render_kw={"placeholder":"Password"})
     submit = SubmitField("Login")
 
-    def validate_username(self,username):
-        existing_user_username = User.query.filter_by(username=username.data).first()
-        if existing_user_username:
-            raise ValidationError("username sudah ada!")
-
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 @app.route('/')
 def home():
     return render_template('home.html')
-
-@app.route('/dashboard', methods=['GET','POST'])
-@login_required
-def dashboard():
-    return render_template('dashboard.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -67,6 +56,10 @@ def login():
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
+@app.route('/dashboard', methods=['GET','POST'])
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
 @app.route('/logout', methods=['GET','POST'])
 @login_required
